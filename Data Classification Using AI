@@ -1,0 +1,82 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+import math
+dataset = [
+    [5.1, 3.5, 1.4, 0.2, "Setosa"],
+    [4.9, 3.0, 1.4, 0.2, "Setosa"],
+    [5.0, 3.4, 1.5, 0.2, "Setosa"],
+    [5.5, 2.3, 4.0, 1.3, "Versicolor"],
+    [6.5, 2.8, 4.6, 1.5, "Versicolor"],
+    [5.7, 2.8, 4.5, 1.3, "Versicolor"],
+]
+def split_data(data, split_ratio=0.7):
+    random.shuffle(data)
+    split_index = int(len(data) * split_ratio)
+    return data[:split_index], data[split_index:]
+
+train_data, test_data = split_data(dataset)
+def euclidean_distance(row1, row2):
+    distance = 0
+    for i in range(len(row1) - 1):
+        distance += (row1[i] - row2[i]) ** 2
+    return math.sqrt(distance)
+def get_neighbors(train, test_row, k=3):
+    distances = []
+    for train_row in train:
+        dist = euclidean_distance(test_row, train_row)
+        distances.append((train_row, dist))
+    distances.sort(key=lambda x: x[1])
+    neighbors = [distances[i][0] for i in range(k)]
+    return neighbors
+
+def predict_classification(train, test_row, k=3):
+    neighbors = get_neighbors(train, test_row, k)
+    output_values = [row[-1] for row in neighbors]
+    prediction = max(set(output_values), key=output_values.count)
+    return prediction
+def predict():
+    try:
+        sl = float(entry_sl.get())
+        sw = float(entry_sw.get())
+        pl = float(entry_pl.get())
+        pw = float(entry_pw.get())
+
+        test_row = [sl, sw, pl, pw]
+
+        result = predict_classification(train_data, test_row, k=3)
+
+        messagebox.showinfo("Prediction Result", f"Predicted Class: {result}")
+
+    except:
+        messagebox.showerror("Error", "Please enter valid numeric values")
+
+root = tk.Tk()
+root.title("AI Classification Project - Built by Your Name")
+root.geometry("400x400")
+
+title = tk.Label(root, text="AI CLASSIFICATION SYSTEM", font=("Arial", 14, "bold"))
+title.pack(pady=10)
+
+subtitle = tk.Label(root, text="Internship Project (No sklearn)", fg="gray")
+subtitle.pack()
+
+tk.Label(root, text="Sepal Length").pack()
+entry_sl = tk.Entry(root)
+entry_sl.pack()
+
+tk.Label(root, text="Sepal Width").pack()
+entry_sw = tk.Entry(root)
+entry_sw.pack()
+
+tk.Label(root, text="Petal Length").pack()
+entry_pl = tk.Entry(root)
+entry_pl.pack()
+
+tk.Label(root, text="Petal Width").pack()
+entry_pw = tk.Entry(root)
+entry_pw.pack()
+
+tk.Button(root, text="Predict Class", command=predict, bg="green", fg="white").pack(pady=20)
+
+root.mainloop()
