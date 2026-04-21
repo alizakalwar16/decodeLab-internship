@@ -1,0 +1,96 @@
+import tkinter as tk
+from tkinter import scrolledtext
+from datetime import datetime
+import random
+
+class SmartBot:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Aliza's Bot-Internship Project")
+        self.root.geometry('900x650')
+        self.root.config(bg='#0f172a')
+        self.root.resizable(False, False)
+
+        self.responses = {
+            'greetings': ['Hello! 👋', 'Hi there! 😊', 'Assalam-o-Alaikum! 🌟'],
+            'how are you': ['I am functioning perfectly! 🤖', 'All systems green! ✅'],
+            'bye': ['Goodbye! Have a productive day! 🚀', 'See you again! 👋'],
+        }
+
+        title = tk.Label(root, text="🤖 Aliza's Smart Bot", font=('Arial', 24, 'bold'), bg='#0f172a', fg='white')
+        title.pack(pady=10)
+
+        self.chat = scrolledtext.ScrolledText(root, wrap=tk.WORD, font=('Consolas', 12), bg='#111827', fg='white', insertbackground='white')
+        self.chat.pack(padx=15, pady=10, fill='both', expand=True)
+        self.chat.config(state='disabled')
+
+        bottom = tk.Frame(root, bg='#0f172a')
+        bottom.pack(fill='x', padx=15, pady=10)
+
+        self.entry = tk.Entry(bottom, font=('Arial', 14), bg='white', fg='black')
+        self.entry.pack(side='left', fill='x', expand=True, ipady=8)
+        self.entry.bind('<Return>', lambda e: self.send())
+
+        send_btn = tk.Button(bottom, text='Send', command=self.send, font=('Arial', 12, 'bold'), bg='#22c55e', fg='white', width=10)
+        send_btn.pack(side='left', padx=8)
+
+        clear_btn = tk.Button(bottom, text='Clear', command=self.clear_chat, font=('Arial', 12, 'bold'), bg='#ef4444', fg='white', width=10)
+        clear_btn.pack(side='left')
+
+        self.bot_message('Welcome! Type something like hello, time, date, help, joke, bye')
+
+    def bot_message(self, msg):
+        self.chat.config(state='normal')
+        self.chat.insert(tk.END, f'Bot: {msg}\n')
+        self.chat.config(state='disabled')
+        self.chat.see(tk.END)
+
+    def user_message(self, msg):
+        self.chat.config(state='normal')
+        self.chat.insert(tk.END, f'You: {msg}\n')
+        self.chat.config(state='disabled')
+        self.chat.see(tk.END)
+
+    def get_reply(self, text):
+        t = text.lower().strip()
+        if t in ['hi', 'hello', 'hey', 'salam']:
+            return random.choice(self.responses['greetings'])
+        elif 'how are you' in t:
+            return random.choice(self.responses['how are you'])
+        elif 'time' in t:
+            return 'Current time is ' + datetime.now().strftime('%I:%M:%S %p')
+        elif 'date' in t:
+            return 'Today is ' + datetime.now().strftime('%d-%m-%Y')
+        elif 'help' in t:
+            return 'Try: hello, time, date, joke, python, internship, bye'
+        elif 'joke' in t:
+            return 'Why did the programmer quit? Because he did not get arrays! 😄'
+        elif 'python' in t:
+            return 'Python is powerful for AI, automation and GUI apps.'
+        elif 'internship' in t:
+            return 'Your project looks professional and ready to upload! 💼'
+        elif t in ['bye', 'exit', 'quit']:
+            self.root.after(1500, self.root.destroy)
+            return random.choice(self.responses['bye'])
+        else:
+            return 'I am still learning. Please try another keyword.'
+
+    def send(self):
+        text = self.entry.get().strip()
+        if not text:
+            return
+        self.user_message(text)
+        self.entry.delete(0, tk.END)
+        reply = self.get_reply(text)
+        self.bot_message(reply)
+
+    def clear_chat(self):
+        self.chat.config(state='normal')
+        self.chat.delete('1.0', tk.END)
+        self.chat.config(state='disabled')
+        self.bot_message('Chat cleared. Ready again!')
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = SmartBot(root)
+    root.mainloop()
