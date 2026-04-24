@@ -1,0 +1,61 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+items = {
+    'Gaming': ['RGB Keyboard', 'Gaming Mouse', 'Headset', 'Mouse Pad'],
+    'Study': ['Planner', 'Desk Lamp', 'Notebook Set', 'Blue Light Glasses'],
+    'Fashion': ['Sneakers', 'Hoodie', 'Watch', 'Backpack'],
+    'Music': ['Bluetooth Speaker', 'Earbuds', 'Mic', 'Playlist App'],
+    'Travel': ['Power Bank', 'Water Bottle', 'Travel Bag', 'Neck Pillow']
+}
+
+def recommend():
+    selected = []
+    for name, var in checks.items():
+        if var.get() == 1:
+            selected.append(name)
+    if not selected:
+        messagebox.showwarning('Select Interest', 'Please choose at least one interest.')
+        return
+    result = []
+    for category in selected:
+        result.extend(random.sample(items[category], 2))
+    unique = []
+    for x in result:
+        if x not in unique:
+            unique.append(x)
+    output.delete('1.0', tk.END)
+    output.insert(tk.END, '✨ Recommended For You ✨\n\n')
+    for i, item in enumerate(unique, 1):
+        output.insert(tk.END, f'{i}. {item}\n')
+
+root = tk.Tk()
+root.title('MoodMatch AI Recommender - Aliza')
+root.geometry('520x560')
+root.configure(bg='#111111')
+
+heading = tk.Label(root, text='MOODMATCH AI Recommender💜', font=('Arial', 22, 'bold'), fg='white', bg='#111111')
+heading.pack(pady=10)
+sub = tk.Label(root, text='Pick your vibe & get smart recommendations', font=('Arial', 11), fg='#cfcfcf', bg='#111111')
+sub.pack(pady=2)
+
+frame = tk.Frame(root, bg='#111111')
+frame.pack(pady=15)
+
+checks = {}
+for category in items.keys():
+    var = tk.IntVar()
+    cb = tk.Checkbutton(frame, text=category, variable=var, font=('Arial', 13), fg='white', bg='#111111', selectcolor='#222222', activebackground='#111111')
+    cb.pack(anchor='w', pady=4)
+    checks[category] = var
+
+btn = tk.Button(root, text='Get Recommendations', command=recommend, font=('Arial', 13, 'bold'), bg='#8b5cf6', fg='white', padx=12, pady=8)
+btn.pack(pady=15)
+
+output = tk.Text(root, height=14, width=42, font=('Arial', 12), bg='#1f1f1f', fg='white', bd=0)
+output.pack(pady=10)
+
+footer = tk.Label(root, text='Internship Project 3 ', fg='#aaaaaa', bg='#111111')
+footer.pack(side='bottom', pady=8)
+
+root.mainloop()
