@@ -1,0 +1,78 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk
+import os
+root = tk.Tk()
+root.title('VisionLite AI - Final Project by Aliza')
+root.geometry('700x620')
+root.configure(bg='#eef6ff')
+
+selected_img = None
+photo = None
+def detect_text():
+    text = text_box.get('1.0', tk.END).strip()
+    if not text:
+        result_var.set('No text entered.')
+        return
+    if any(ch.isdigit() for ch in text):
+        result_var.set('Detected: Alphanumeric Text')
+    elif len(text.split()) > 3:
+        result_var.set('Detected: Sentence / Paragraph')
+    else:
+        result_var.set('Detected: Simple Text')
+
+def open_image():
+    global selected_img, photo
+    path = filedialog.askopenfilename(filetypes=[('Image Files','*.png;*.jpg;*.jpeg')])
+    if not path:
+        return
+    selected_img = path
+    img = Image.open(path)
+    img.thumbnail((260,260))
+    photo = ImageTk.PhotoImage(img)
+    img_label.config(image=photo, text='')
+    recognize_image()
+
+def recognize_image():
+    if not selected_img:
+        result_var.set('No image selected.')
+        return
+    name = os.path.basename(selected_img).lower()
+    if 'cat' in name:
+        result_var.set('Image Result: Cat Detected')
+    elif 'dog' in name:
+        result_var.set('Image Result: Dog Detected')
+    elif 'book' in name:
+        result_var.set('Image Result: Book Detected')
+    else:
+        result_var.set('Image Result: Object Recognized')
+head = tk.Label(root, text='VISIONLITE AI 👁️', font=('Arial',24,'bold'), bg='#eef6ff', fg='#203040')
+head.pack(pady=10)
+sub = tk.Label(root, text='Basic Image & Text Recognition System', font=('Arial',11), bg='#eef6ff', fg='#4a647a')
+sub.pack()
+
+card1 = tk.Frame(root, bg='white', bd=0, relief='flat')
+card1.pack(pady=15, padx=20, fill='x')
+
+tk.Label(card1, text='Text Recognition', font=('Arial',16,'bold'), bg='white').pack(pady=8)
+text_box = tk.Text(card1, height=5, width=60, font=('Arial',11), bd=1)
+text_box.pack(pady=5)
+tk.Button(card1, text='Analyze Text', command=detect_text, bg='#6c63ff', fg='white', font=('Arial',11,'bold')).pack(pady=8)
+
+card2 = tk.Frame(root, bg='white')
+card2.pack(pady=10, padx=20, fill='both', expand=True)
+
+tk.Label(card2, text='Image Recognition', font=('Arial',16,'bold'), bg='white').pack(pady=8)
+img_label = tk.Label(card2, text='No Image Selected', width=32, height=12, bg='#ddeaf7')
+img_label.pack(pady=6)
+tk.Button(card2, text='Upload Image', command=open_image, bg='#00a86b', fg='white', font=('Arial',11,'bold')).pack(pady=8)
+
+result_var = tk.StringVar()
+result_var.set('Output will appear here...')
+result = tk.Label(root, textvariable=result_var, font=('Arial',13,'bold'), bg='#eef6ff', fg='#203040')
+result.pack(pady=12)
+
+footer = tk.Label(root, text='DecodeLabs Internship | Final Project 4', bg='#eef6ff', fg='gray')
+footer.pack(side='bottom', pady=8)
+
+root.mainloop()
